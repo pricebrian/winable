@@ -21,31 +21,38 @@ export default function SignUpPage() {
     setLoading(true);
     setError("");
 
-    const supabase = createClient();
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    try {
+      const supabase = createClient();
 
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-      return;
-    }
+      // Try signing up first
+      const { data, error } = await supabase.auth.signUp({ email, password });
 
-    // If email confirmation is enabled, signUp succeeds but session is null.
-    // Auto-sign in immediately so the creator can start building their giveaway.
-    if (!data.session) {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (signInError) {
-        setError(signInError.message);
+      if (error) {
+        setError(error.message);
         setLoading(false);
         return;
       }
-    }
 
-    // Hard navigation ensures middleware reads fresh auth cookies
-    window.location.href = "/onboarding";
+      // If no session returned (email confirmation on, or duplicate email),
+      // try signing in directly — handles both cases.
+      if (!data.session) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (signInError) {
+          setError(signInError.message);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Hard navigation ensures middleware reads fresh auth cookies
+      window.location.href = "/onboarding";
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+      setLoading(false);
+    }
   }
 
   return (
