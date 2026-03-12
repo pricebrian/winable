@@ -22,12 +22,26 @@ export default function SignUpPage() {
     setError("");
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) {
       setError(error.message);
       setLoading(false);
       return;
+    }
+
+    // If email confirmation is enabled, signUp succeeds but session is null.
+    // Auto-sign in immediately so the creator can start building their giveaway.
+    if (!data.session) {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (signInError) {
+        setError(signInError.message);
+        setLoading(false);
+        return;
+      }
     }
 
     // Hard navigation ensures middleware reads fresh auth cookies
