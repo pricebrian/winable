@@ -116,7 +116,7 @@ export function StepReview({ data, onBack, onLaunched }: StepReviewProps) {
             onCheckedChange={(c) => setConfirmPrize(c === true)}
           />
           <label htmlFor="confirm-prize" className="text-sm leading-relaxed cursor-pointer">
-            I confirm I have the right to offer this prize
+            I confirm I have the right to offer this prize and will deliver it to the winner
           </label>
         </div>
         <div className="flex items-start gap-3">
