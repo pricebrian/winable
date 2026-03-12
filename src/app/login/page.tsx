@@ -33,7 +33,8 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard");
+    // Hard navigation ensures middleware reads fresh auth cookies
+    window.location.href = "/dashboard";
   }
 
   return (

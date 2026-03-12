@@ -30,7 +30,8 @@ export default function SignUpPage() {
       return;
     }
 
-    router.push("/onboarding");
+    // Hard navigation ensures middleware reads fresh auth cookies
+    window.location.href = "/onboarding";
   }
 
   return (
